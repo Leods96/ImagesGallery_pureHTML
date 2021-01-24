@@ -6,3 +6,7 @@ build/*
 
 WebContent/WEB-INF/lib
 WebContent/WEB-INF/lib/*
+
+WebContent/images/
+WebContent/images/*
+

@@ -20,8 +20,9 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import beans.ImageBean;
-import beans.AlbumBean;
+import beans.CommentBean;
 import dao.ImageDAO;
+import dao.CommentDAO;
 import utils.ChunkExtractor;
 import utils.ImagesScrollManager;
 
@@ -60,43 +61,80 @@ public class AlbumPage extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String idAlbumString = request.getParameter("idAlbum");
+		String imageIndexString = request.getParameter("imageIndex");
 		String albumTitle = request.getParameter("albumTitle");
+		String chunkIndexString = request.getParameter("chunkIndex");
 		if(idAlbumString == null || idAlbumString.isEmpty()) {
 			response.sendError(400, "Missing idAlbum parameter");
 			return;
 		}
+		if(imageIndexString == null || imageIndexString.isEmpty()) {
+			response.sendError(400, "Missing imageIndex parameter");
+			return;
+		}
+		if(chunkIndexString == null || chunkIndexString.isEmpty()) {
+			response.sendError(400, "Missing chunkIndex parameter");
+			return;
+		}
 		int idAlbum;
+		int imageIndex;
+		int chunkIndex;
 		try {
+			chunkIndex = Integer.parseInt(chunkIndexString);
 			idAlbum = Integer.parseInt(idAlbumString);
+			imageIndex = Integer.parseInt(imageIndexString);
 		} catch (NumberFormatException e){
-			response.sendError(400, "Wrong idAlbum type - must be numeric");
+			response.sendError(400, "Wrong idAlbum or imageIndex or chunkIndex type - only numeric type accepted");
 			return;
 		}
 		
 		ImageDAO imageDAO = new ImageDAO(connection);
 		List<ImageBean> images = null;
+		List<ImageBean> chunkOfImages = null;
 		
 		try {
-			images = ChunkExtractor.extractChunk(imageDAO.getImages(idAlbum), 0, ImagesScrollManager.imagesChunkSize);
+			images = imageDAO.getImages(idAlbum);
 		} catch (SQLException e) {
 			response.sendError(500, "Errore extracting images from database");
 			return;
 		}
-		
 		ImagesScrollManager scrollManager = new ImagesScrollManager();
-		scrollManager.setBegin(true);
-		scrollManager.setEnd(images.size() <= ImagesScrollManager.imagesChunkSize - 1);
-		scrollManager.setChunkNumber(1);
+		if (images.size() > ImagesScrollManager.imagesChunkSize) {
+			chunkOfImages = ChunkExtractor.extractChunk(images, chunkIndex, chunkIndex + ImagesScrollManager.imagesChunkSize);	
+			scrollManager.setBegin(images.indexOf(chunkOfImages.get(0)) == 0);
+			scrollManager.setEnd(images.indexOf(chunkOfImages.get(chunkOfImages.size() - 1)) == (images.size() - 1));
+			scrollManager.setChunkIndex((chunkIndex < 0) ? 0 : ((chunkIndex > images.size() - ImagesScrollManager.imagesChunkSize) ? images.size() - ImagesScrollManager.imagesChunkSize : chunkIndex));
+		} else {
+			chunkOfImages = images;
+			scrollManager.setBegin(true);
+			scrollManager.setEnd(true);
+			scrollManager.setChunkIndex(0);
+		}
 		
-		
-		request.getSession().setAttribute("idAlbum", idAlbum);
-		request.getSession().setAttribute("albumTitle", albumTitle);
-		
-		String path = "/WEB-INF/albumPage.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("images", images);
+		
+		if(imageIndex >= chunkOfImages.size() || imageIndex < 0) {
+			ctx.setVariable("isShowingImage", false);
+		} else {
+			ctx.setVariable("isShowingImage", true);
+			ctx.setVariable("imageIndex", imageIndex);
+			CommentDAO commentDAO = new CommentDAO(connection);
+			List<CommentBean> comments = null;
+			try {
+				comments = commentDAO.getComments(chunkOfImages.get(imageIndex).getIdImage());
+			} catch (SQLException e) {
+				response.sendError(500, "Errore extracting images from database");
+				return;
+			}
+			ctx.setVariable("comments", comments);
+		}
+		ctx.setVariable("images", chunkOfImages);
 		ctx.setVariable("scrollManager", scrollManager);
+		ctx.setVariable("idAlbum", idAlbum);
+		ctx.setVariable("albumTitle", albumTitle);
+		
+		String path = "/WEB-INF/albumPage.html";
 		templateEngine.process(path, ctx, response.getWriter());	
 	}
 

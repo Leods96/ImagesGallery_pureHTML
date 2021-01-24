@@ -1,5 +1,5 @@
 .title{
-	background-color: #87cf81;
+	background-color: #204a87;
 	color: white;
 	text-align: center;
 	vertical-align: middle;
@@ -11,9 +11,39 @@
 	font: bold;
 }
 
+.imagetitle{
+	background-color: #204a87;
+	color: black;
+	font-size: 2.5vw;
+	font: bold;
+}
+
+.date{
+	text-align: right;
+	font-size: 1vw;
+	vertical-align: bottom;
+}
+
+.description{
+	text-align: center;
+	font-size: 1.5vw;
+	vertical-align: middle;
+	font: italic;
+}
+
+.comment{
+	text-align: left;
+	font-size: 1vw;
+	padding-left: 100px;
+	vertical-align: middle;
+	font: italic;
+}
+
 .user{
 	text-align: right;
 	font-size: 2.5vw;
+	text-align: center;
+	vertical-align: middle;
 }
 
 .subtitle{
@@ -31,6 +61,11 @@
 	width: 100%;
 }
 
+.showbigimg {
+	max-width: 500px;
+	height: auto;
+}
+
 table {
 	border-collapse: collapse;
 	width: 90%;
@@ -43,3 +78,4 @@ table, th, td {
 	text-align: center;
 	vertical-align: middle;
 }
+

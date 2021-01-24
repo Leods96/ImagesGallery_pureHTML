@@ -1,13 +1,19 @@
 package utils;
 
-import java.util.List;
-
 public class ImagesScrollManager {
 	public static int imagesChunkSize = 5;
 	
 	private boolean isBegin;
 	private boolean isEnd;
-	private int chunkNumber;
+	private int chunkIndex;
+
+	public int getChunkIndex() {
+		return chunkIndex;
+	}
+
+	public void setChunkIndex(int chunkIndex) {
+		this.chunkIndex = chunkIndex;
+	}
 
 	public boolean isBegin() {
 		return isBegin;
@@ -24,12 +30,8 @@ public class ImagesScrollManager {
 	public void setEnd(boolean isEnd) {
 		this.isEnd = isEnd;
 	}
-
-	public int getChunkNumber() {
-		return chunkNumber;
-	}
-
-	public void setChunkNumber(int chunkNumber) {
-		this.chunkNumber = chunkNumber;
+	
+	public int getImagesChunkSize() {
+		return imagesChunkSize;
 	}
 }

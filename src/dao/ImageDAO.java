@@ -35,7 +35,7 @@ public class ImageDAO {
 			image.setTitle(result.getString("title"));
 			image.setDate(result.getDate("date"));
 			image.setDescription(result.getString("description"));
-			image.setPath("path");
+			image.setPath(result.getString("path"));
 			imagesCollection.add(image);
 		}
 		try {

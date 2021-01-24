@@ -12,29 +12,83 @@
 	
 	<br>
 	
-	<!-- Tabella preventivi -->
 	<div>
 		<h2 th:class="subtitle">Images</h2>
 		<table>
 			<!-- Header -->
 			<tr>
 				<th th:if="${(!scrollManager.isBegin)}">
-					<input type="submit" name="submit" value="Previous" action="Previous">
+					<form th:action="@{/AlbumPage}" method="get">
+						<input type="hidden" name="idAlbum" th:value=${idAlbum} />
+						<input type="hidden" name="albumTitle" th:value=${albumTitle} />
+						<input type="hidden" name="chunkIndex" th:value="${scrollManager.chunkIndex} - ${scrollManager.imagesChunkSize}"/>
+					    <input type="hidden" name="imageIndex" value="-1"/>
+					    <input type="submit" value="Prev" />
+					</form>
 				</th>
 				<th th:each="i : ${images}">
+					<a th:href="@{/AlbumPage(idAlbum=${idAlbum}, albumTitle=${albumTitle}, imageIndex=${iStat.index}, chunkIndex=${scrollManager.chunkIndex})}" class="thumbnail">
+						<img th:src=@{${i.path}} width="50px">
+					</a>
+					<br>
 					<span th:text=${i.title}></span>
 				</th>
 				<th th:if="${(!scrollManager.isEnd)}">
-					<input type="submit" name="submit" value="Next" action="Next">
+					<form th:action="@{/AlbumPage}" method="get">
+						<input type="hidden" name="idAlbum" th:value=${idAlbum} />
+						<input type="hidden" name="albumTitle" th:value=${albumTitle} />
+						<input type="hidden" name="chunkIndex" th:value="${scrollManager.chunkIndex} + ${scrollManager.imagesChunkSize}"/>
+					    <input type="hidden" name="imageIndex" value="-1"/>
+					    <input type="submit" value="Next" />
+					</form>
 				</th>
 			</tr>
 		</table>
 	</div>
 	
+	<div th:if="${(isShowingImage)}">
+		<table>
+			<tr>
+				<th>
+					<img th:src=@{${images[imageIndex].path}} th:class="showbigimg">
+				</th>
+				<th>
+					<div th:class="imagetitle">
+						<span th:text=${images[imageIndex].title}></span>
+					</div>
+					<br>
+						<p th:class="description">
+							<span th:text=${images[imageIndex].description}></span>
+						</p>
+					<br> 
+					<p th:class="date">
+							<span th:text=${images[imageIndex].date}></span>
+					</p>
+				</th>
+			</tr>
+		</table>
+		<br>
+		<div th:each="c : ${comments}" th:class="comment">
+			<p>
+				<span th:text="${c.userName}"></span>: " <span th:text="${c.text}"></span> "
+			</p>
+		</div>
+		<form action="Comment" method="POST" th:class="description" }>
+		 	<fieldset  style="border:none">
+				<input type="text" name="text" placeholder="make a comment.." required>
+				<input type="hidden" name="idImage" th:value="${images[imageIndex].idImage}">
+				<input type="hidden" name="idAlbum" th:value="${idAlbum}">
+				<input type="hidden" name="imageIndex" th:value="${imageIndex}">
+				<input type="hidden" name="albumTitle" th:value="${albumTitle}">
+				<input type="hidden" name="chunkIndex" th:value="${scrollManager.chunkIndex}">
+				<input type="submit" value="Submit">
+			</fieldset>
+		</form>
+	</div>
+	
 	<br>
 	<br>
 	
-	<!-- Logout -->
 	<div th:class="subtitle">
 		<a th:href="@{/Logout}">Logout</a> 
 		<a th:href="@{/HomePage}">Home Page</a>
