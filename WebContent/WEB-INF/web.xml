@@ -4,34 +4,29 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
 	version="4.0">
 
-	<display-name>Galleria Immagini pure HTML</display-name>
+	<display-name>Image Gallery pure HTML</display-name>
 	
-			
-	<!-- Variabile globale url del database -->
 	<context-param>
 		<param-name>dbUrl</param-name>
 		<param-value>jdbc:mysql://localhost:3306/galleria_immagini</param-value>
 	</context-param>
 	
-	<!-- Variabile globale nickname user -->
 	<context-param>
 		<param-name>dbUser</param-name>
 		<param-value>root</param-value>
 	</context-param>
 	
-	<!-- Variabile globale pw user -->
 	<context-param>
 		<param-name>dbPassword</param-name>
 		<param-value>password</param-value>
 	</context-param>
 	
-	<!-- Variabile globale driver -->
 	<context-param>
 		<param-name>dbDriver</param-name>
 		<param-value>com.mysql.cj.jdbc.Driver</param-value>
 	</context-param>
 	
-	<!-- Pagina iniziale -->
+	<!-- Starting page -->
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

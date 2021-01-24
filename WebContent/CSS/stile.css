@@ -1,0 +1,45 @@
+.title{
+	background-color: #87cf81;
+	color: white;
+	text-align: center;
+	vertical-align: middle;
+	padding-top: 15px;
+	padding-bottom: 1px;
+	padding-left: 15px;
+	padding-right: 15px;
+	font-size: 6vw;
+	font: bold;
+}
+
+.user{
+	text-align: right;
+	font-size: 2.5vw;
+}
+
+.subtitle{
+	text-align: center;
+}
+
+.error{
+	color: red;
+	text-align: center;
+	width: 100%;
+}
+
+.circlebutton{
+	text-align: center;
+	width: 100%;
+}
+
+table {
+	border-collapse: collapse;
+	width: 90%;
+	margin: auto;
+}
+
+table, th, td {
+	border: 1px solid #ddd;
+	padding: 10px;
+	text-align: center;
+	vertical-align: middle;
+}

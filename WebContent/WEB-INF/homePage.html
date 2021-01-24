@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Home Page</title>
+	<link rel="stylesheet" type="text/css" href="../CSS/stile.css" th:href="@{/CSS/stile.css}" />
+</head>
+<body>
+	<!-- Titolo -->
+	<div th:class="title">
+		<span>Home Page</span>
+		<p th:class="user">
+			Welcome: <span th:text="${userName}"></span>!
+		</p>
+	</div>
+	
+	<br>
+	
+	<!-- Tabella Album -->
+	<div>
+		<h2 th:class="subtitle">Album</h2>
+		<table>
+			<!-- Header -->
+			<tr>
+				<th>Title</th>
+				<th>Date</th>
+				<th>    </th>
+			</tr>
+			<!-- Righe -->
+			<tr th:each="a : ${album}">
+				<td th:text="${a.title}"></td>
+				<td th:text="${a.date}"></td>
+				<td>
+					<a th:href="@{/AlbumPage(idAlbum=${a.idAlbum}, albumTitle=${a.title})}">
+						<span> Go to album </span>
+					</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	<br>
+	<br>
+	
+	<!-- Logout -->
+	<div th:class="subtitle">
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
+	<br>
+</body>
+</html>

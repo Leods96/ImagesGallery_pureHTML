@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Album Page</title>
+	<link rel="stylesheet" type="text/css" href="../CSS/stile.css" th:href="@{/CSS/stile.css}" />
+</head>
+<body>
+	<div th:class="title">
+		<span th:text=${albumTitle}></span>
+	</div>
+	
+	<br>
+	
+	<!-- Tabella preventivi -->
+	<div>
+		<h2 th:class="subtitle">Images</h2>
+		<table>
+			<!-- Header -->
+			<tr>
+				<th th:if="${(!scrollManager.isBegin)}">
+					<input type="submit" name="submit" value="Previous" action="Previous">
+				</th>
+				<th th:each="i : ${images}">
+					<span th:text=${i.title}></span>
+				</th>
+				<th th:if="${(!scrollManager.isEnd)}">
+					<input type="submit" name="submit" value="Next" action="Next">
+				</th>
+			</tr>
+		</table>
+	</div>
+	
+	<br>
+	<br>
+	
+	<!-- Logout -->
+	<div th:class="subtitle">
+		<a th:href="@{/Logout}">Logout</a> 
+		<a th:href="@{/HomePage}">Home Page</a>
+	</div>
+	<br>
+</body>
+</html>

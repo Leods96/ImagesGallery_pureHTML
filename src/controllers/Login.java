@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import beans.UtenteBean;
+import beans.UserBean;
 import dao.LoginDAO;
 
 @WebServlet("/Login")
@@ -37,17 +37,15 @@ public class Login extends HttpServlet {
     		
     		//Connessione con il database
     		connection = DriverManager.getConnection(url, user, password);
-    	}
-    	catch (ClassNotFoundException e) {
+    	} catch (ClassNotFoundException e) {
     		throw new UnavailableException("Cannot load db driver");
-		}
-    	catch (SQLException e) {
+		} catch (SQLException e) {
     		throw new UnavailableException("Cannot connect to db");
 		}
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendError(404, "Effetturare richiesta POST");
+		response.sendError(404, "Make POST request");
 		return;
 	}
 
@@ -55,27 +53,26 @@ public class Login extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		if(username == null || password == null || username.isEmpty() || password.isEmpty()) {
-			response.sendError(400, "Parametri login mancanti");
+			response.sendError(400, "Missing Login parameters");
 			return;
 		}
 
 		LoginDAO loginDAO = new LoginDAO(connection);
-		UtenteBean user = null;
+		UserBean user = null;
 		
 		try {
 			user = loginDAO.checkCredentials(username, password);
 		} catch (SQLException e) {
-			response.sendError(500, "Errore nell'estrazione delle credenziali dal database");
+			response.sendError(500, "Error extracting credentials from database");
 			return;
 		}
 		
-		//Redirect alle servlet che gestiscono le home pages
 		String path = getServletContext().getContextPath();
 		String target = null;
-		if (user == null) { //Login fallito
+		if (user == null) {
 			target = "/index.html";
-		} else { //Login ok
-			request.getSession().setAttribute("user", user); //User salvato nella sessione del client.
+		} else {
+			request.getSession().setAttribute("user", user);
 			target = "/HomePage";
 		}
 		response.sendRedirect(path + target);	
@@ -86,8 +83,7 @@ public class Login extends HttpServlet {
 			if (connection != null) {
 				connection.close();
 			}
-		}
-		catch (SQLException sqle) {
+		} catch (SQLException sqle) {
 		}
 	}
 

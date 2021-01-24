@@ -1,16 +1,16 @@
 package beans;
 
-public class UtenteBean {
-	private int idUtente;
+public class UserBean {
+	private int idUser;
 	private String userName;
 	private String password;
 	private String email;
 	
-	public int getIdUtente() {
-		return idUtente;
+	public int getIdUser() {
+		return idUser;
 	}
-	public void setIdUtente(int idUtente) {
-		this.idUtente = idUtente;
+	public void setIdUser(int idUser) {
+		this.idUser = idUser;
 	}
 	public String getUserName() {
 		return userName;
