@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Login page</title>
@@ -16,6 +16,7 @@
 			<br>
 			Password: <input type="password" name="password" placeholder="Password" required>
 			<br>
+				<p style="color:red"><span th:text=" ${errorMsg}" ></span> </p>
 			<br>
 			<input type="submit" value="Login">
 		</fieldset>

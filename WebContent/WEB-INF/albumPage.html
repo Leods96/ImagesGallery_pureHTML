@@ -73,7 +73,7 @@
 				<span th:text="${c.userName}"></span>: " <span th:text="${c.text}"></span> "
 			</p>
 		</div>
-		<form action="Comment" method="POST" th:class="description" }>
+		<form action="Comment" method="POST" th:class="description" >
 		 	<fieldset  style="border:none">
 				<input type="text" name="text" placeholder="make a comment.." required>
 				<input type="hidden" name="idImage" th:value="${images[imageIndex].idImage}">

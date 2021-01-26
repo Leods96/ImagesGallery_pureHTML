@@ -2,16 +2,19 @@ package controllers;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+
+import utils.ConnectionAndEngineHandler;
 
 import beans.UserBean;
 import dao.LoginDAO;
@@ -21,27 +24,15 @@ public class Login extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
+	private TemplateEngine templateEngine;
        
     public Login() {
         super();
     }
     
-    public void init() throws ServletException{
-    	try {
-    		ServletContext context = getServletContext();
-    		String driver = context.getInitParameter("dbDriver");
-    		String url = context.getInitParameter("dbUrl");
-    		String user = context.getInitParameter("dbUser");
-    		String password = context.getInitParameter("dbPassword");
-    		Class.forName(driver);
-    		
-    		//Connessione con il database
-    		connection = DriverManager.getConnection(url, user, password);
-    	} catch (ClassNotFoundException e) {
-    		throw new UnavailableException("Cannot load db driver");
-		} catch (SQLException e) {
-    		throw new UnavailableException("Cannot connect to db");
-		}
+    public void init() throws ServletException {
+    	connection = ConnectionAndEngineHandler.getConnection(getServletContext());
+		templateEngine = ConnectionAndEngineHandler.getTemplateEngine(getServletContext());
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -53,7 +44,7 @@ public class Login extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		if(username == null || password == null || username.isEmpty() || password.isEmpty()) {
-			response.sendError(400, "Missing Login parameters");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing Login parameters");
 			return;
 		}
 
@@ -63,28 +54,31 @@ public class Login extends HttpServlet {
 		try {
 			user = loginDAO.checkCredentials(username, password);
 		} catch (SQLException e) {
-			response.sendError(500, "Error extracting credentials from database");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error extracting credentials from database");
 			return;
 		}
 		
-		String path = getServletContext().getContextPath();
-		String target = null;
+		String path = null;
 		if (user == null) {
-			target = "/index.html";
+			ServletContext servletContext = getServletContext();
+			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+			ctx.setVariable("errorMsg", "Incorrect credentials");
+			path = "/index.html";
+			templateEngine.process(path, ctx, response.getWriter());
 		} else {
 			request.getSession().setAttribute("user", user);
-			target = "/HomePage";
+			String target = "/HomePage";
+			path = getServletContext().getContextPath();
+			response.sendRedirect(path + target);	
 		}
-		response.sendRedirect(path + target);	
 	}
 	
 	public void destroy() {
 		try {
-			if (connection != null) {
-				connection.close();
-			}
-		} catch (SQLException sqle) {
-		}
+			ConnectionAndEngineHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
 	}
 
 }
