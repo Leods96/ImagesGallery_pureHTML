@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import beans.AlbumBean;
+import exceptions.AlbumNotFoundException;
 
 public class AlbumDAO {
 	
@@ -40,5 +41,32 @@ public class AlbumDAO {
 			throw new SQLException(e);
 		}
 		return albumCollection;
+	}
+	
+	public String getAlbumTitle(int albumId) throws SQLException, AlbumNotFoundException {
+		String albumTitle = null;
+		String query = "SELECT title "
+				+ "FROM album "
+				+ "WHERE idAlbum = ?";
+		ResultSet result = null;
+		PreparedStatement preparedstatement = null;		
+		preparedstatement = connection.prepareStatement(query);
+		preparedstatement.setInt(1, albumId);
+		result = preparedstatement.executeQuery();
+		
+		if (result.isBeforeFirst()) {
+			result.next();
+			albumTitle = result.getString("title");		
+		}
+		try {
+			result.close();
+			preparedstatement.close();
+		} catch (Exception e) {
+			throw new SQLException(e);
+		}
+		if(albumTitle == null) {
+			throw new AlbumNotFoundException();
+		}
+		return albumTitle;
 	}
 }

@@ -36,7 +36,7 @@ public class Login extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendError(404, "Make POST request");
+		response.sendError(HttpServletResponse.SC_NOT_FOUND, "Make POST request");
 		return;
 	}
 

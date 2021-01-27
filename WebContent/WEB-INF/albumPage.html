@@ -20,14 +20,13 @@
 				<th th:if="${(!scrollManager.isBegin)}">
 					<form th:action="@{/AlbumPage}" method="get">
 						<input type="hidden" name="idAlbum" th:value=${idAlbum} />
-						<input type="hidden" name="albumTitle" th:value=${albumTitle} />
 						<input type="hidden" name="chunkIndex" th:value="${scrollManager.chunkIndex} - ${scrollManager.imagesChunkSize}"/>
 					    <input type="hidden" name="imageIndex" value="-1"/>
 					    <input type="submit" value="Prev" />
 					</form>
 				</th>
 				<th th:each="i : ${images}">
-					<a th:href="@{/AlbumPage(idAlbum=${idAlbum}, albumTitle=${albumTitle}, imageIndex=${iStat.index}, chunkIndex=${scrollManager.chunkIndex})}" class="thumbnail">
+					<a th:href="@{/AlbumPage(idAlbum=${idAlbum}, imageIndex=${iStat.index}, chunkIndex=${scrollManager.chunkIndex})}" class="thumbnail">
 						<img th:src=@{${i.path}} width="50px">
 					</a>
 					<br>
@@ -36,7 +35,6 @@
 				<th th:if="${(!scrollManager.isEnd)}">
 					<form th:action="@{/AlbumPage}" method="get">
 						<input type="hidden" name="idAlbum" th:value=${idAlbum} />
-						<input type="hidden" name="albumTitle" th:value=${albumTitle} />
 						<input type="hidden" name="chunkIndex" th:value="${scrollManager.chunkIndex} + ${scrollManager.imagesChunkSize}"/>
 					    <input type="hidden" name="imageIndex" value="-1"/>
 					    <input type="submit" value="Next" />
@@ -79,7 +77,6 @@
 				<input type="hidden" name="idImage" th:value="${images[imageIndex].idImage}">
 				<input type="hidden" name="idAlbum" th:value="${idAlbum}">
 				<input type="hidden" name="imageIndex" th:value="${imageIndex}">
-				<input type="hidden" name="albumTitle" th:value="${albumTitle}">
 				<input type="hidden" name="chunkIndex" th:value="${scrollManager.chunkIndex}">
 				<input type="submit" value="Submit">
 			</fieldset>

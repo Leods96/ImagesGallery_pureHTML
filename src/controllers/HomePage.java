@@ -47,7 +47,7 @@ public class HomePage extends HttpServlet {
 		try {
 			album = albumDAO.getAlbum();
 		} catch(SQLException e) {
-			response.sendError(500, "Errore extracting album from database");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore extracting album from database");
 			return;
 		}
 		
@@ -61,7 +61,7 @@ public class HomePage extends HttpServlet {
 
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendError(404, "Make GET request");
+		response.sendError(HttpServletResponse.SC_NOT_FOUND, "Make GET request");
 		return;
 	}
 	

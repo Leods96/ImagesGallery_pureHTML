@@ -30,7 +30,7 @@ public class Comment extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendError(404, "Make POST request");
+		response.sendError(HttpServletResponse.SC_NOT_FOUND, "Make POST request");
 		return;
 	}
 
@@ -42,19 +42,18 @@ public class Comment extends HttpServlet {
 		String idImageString = request.getParameter("idImage");
 		String idAlbumString = request.getParameter("idAlbum");
 		String imageIndexString = request.getParameter("imageIndex");
-		String albumTitle = request.getParameter("albumTitle");
 		String chunkIndexString = request.getParameter("chunkIndex");
 		if(text == null || text.isEmpty()) {
-			response.sendError(400, "Missing text");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing text");
 			return;
 		}
 		if(idImageString == null || idImageString.isEmpty()) {
-			response.sendError(400, "Missing idImage");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing idImage");
 			return;
 		}
 		if(idAlbumString == null || idAlbumString.isEmpty() || imageIndexString == null || imageIndexString.isEmpty()
-				|| albumTitle == null || albumTitle.isEmpty() || chunkIndexString == null || chunkIndexString.isEmpty()) {
-			response.sendError(400, "Bad params request");
+				|| chunkIndexString == null || chunkIndexString.isEmpty()) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad params request");
 			return;
 		}
 		int idImage;
@@ -67,7 +66,7 @@ public class Comment extends HttpServlet {
 			imageIndex = Integer.parseInt(imageIndexString);
 			chunkIndex = Integer.parseInt(chunkIndexString);
 		} catch (NumberFormatException e) {
-			response.sendError(400, "Wrong params type");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wrong params type");
 			return;
 		}
 		
@@ -75,7 +74,7 @@ public class Comment extends HttpServlet {
 		try {
 			commentDAO.insertComment(text, idImage, user.getIdUser());
 		} catch (SQLException e) {
-			response.sendError(500, "Error creating a comment");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error creating a comment");
 			return;
 		}
 		
@@ -84,7 +83,6 @@ public class Comment extends HttpServlet {
 		String target = "/AlbumPage"
 				+ "?idAlbum=" + idAlbum
 				+ "&imageIndex=" + imageIndex
-				+ "&albumTitle=" + albumTitle
 				+ "&chunkIndex=" + chunkIndex;
 		response.sendRedirect(path + target);	
 	}

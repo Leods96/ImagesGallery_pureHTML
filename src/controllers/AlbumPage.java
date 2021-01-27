@@ -18,6 +18,8 @@ import org.thymeleaf.context.WebContext;
 import beans.ImageBean;
 import beans.CommentBean;
 import dao.ImageDAO;
+import exceptions.AlbumNotFoundException;
+import dao.AlbumDAO;
 import dao.CommentDAO;
 import utils.ChunkExtractor;
 import utils.ConnectionAndEngineHandler;
@@ -43,18 +45,17 @@ public class AlbumPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String idAlbumString = request.getParameter("idAlbum");
 		String imageIndexString = request.getParameter("imageIndex");
-		String albumTitle = request.getParameter("albumTitle");
 		String chunkIndexString = request.getParameter("chunkIndex");
 		if(idAlbumString == null || idAlbumString.isEmpty()) {
-			response.sendError(400, "Missing idAlbum parameter");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing idAlbum parameter");
 			return;
 		}
 		if(imageIndexString == null || imageIndexString.isEmpty()) {
-			response.sendError(400, "Missing imageIndex parameter");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing imageIndex parameter");
 			return;
 		}
 		if(chunkIndexString == null || chunkIndexString.isEmpty()) {
-			response.sendError(400, "Missing chunkIndex parameter");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing chunkIndex parameter");
 			return;
 		}
 		int idAlbum;
@@ -65,9 +66,20 @@ public class AlbumPage extends HttpServlet {
 			idAlbum = Integer.parseInt(idAlbumString);
 			imageIndex = Integer.parseInt(imageIndexString);
 		} catch (NumberFormatException e){
-			response.sendError(400, "Wrong idAlbum or imageIndex or chunkIndex type - only numeric type accepted");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wrong idAlbum or imageIndex or chunkIndex type - only numeric type accepted");
 			return;
 		}
+		
+		AlbumDAO albumDAO = new AlbumDAO(connection);
+		String albumTitle = null;
+		try {
+			albumTitle = albumDAO.getAlbumTitle(idAlbum);
+		} catch(AlbumNotFoundException e) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "Error retrieving album's data");
+		} catch(Exception e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error retrieving album's data");
+		}
+
 		
 		ImageDAO imageDAO = new ImageDAO(connection);
 		List<ImageBean> images = null;
@@ -76,7 +88,7 @@ public class AlbumPage extends HttpServlet {
 		try {
 			images = imageDAO.getImages(idAlbum);
 		} catch (SQLException e) {
-			response.sendError(500, "Errore extracting images from database");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore extracting images from database");
 			return;
 		}
 		ImagesScrollManager scrollManager = new ImagesScrollManager();
@@ -105,7 +117,7 @@ public class AlbumPage extends HttpServlet {
 			try {
 				comments = commentDAO.getComments(chunkOfImages.get(imageIndex).getIdImage());
 			} catch (SQLException e) {
-				response.sendError(500, "Errore extracting images from database");
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore extracting images from database");
 				return;
 			}
 			ctx.setVariable("comments", comments);
@@ -120,7 +132,7 @@ public class AlbumPage extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendError(404, "Make GET request");
+		response.sendError(HttpServletResponse.SC_NOT_FOUND, "Make GET request");
 		return;
 	}
 	
